@@ -1,6 +1,6 @@
 var React = require('react');
 
-var RedqTodo = React.createClass({
+var ReactTodo = React.createClass({
 
 	getInitialState: function(){
 		return {text: '' , items:[]};
@@ -16,7 +16,7 @@ var RedqTodo = React.createClass({
 
 		return (
 			<div>
-				<h3 className="heading">RedqTodo App</h3>
+				<h3 className="heading">ReactTodo App</h3>
 				{(this.state.items.length ? 
 					<ul>
 						{this.state.items.map(item)}
@@ -72,4 +72,9 @@ var RedqTodo = React.createClass({
 
 
 
-React.render(<RedqTodo /> , document.getElementById('app'));
+React.render(<ReactTodo /> , document.getElementById('app'));
+
+
+
+
+
