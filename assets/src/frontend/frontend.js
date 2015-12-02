@@ -3,16 +3,26 @@ var React = require('react');
 var ReactTodo = React.createClass({
 
 	getInitialState: function(){
-		return {text: '' , items:[]};
-	},	
+		return {text: '' , items:[], color: ''};
+	},
+
+	componentWillMount : function(){		
+		if(JSON.parse(localStorage.getItem('todoLists')) != null ){
+			this.state.items = JSON.parse(localStorage.getItem('todoLists'));
+		}
+	},
 
 	render: function(){
+		var self = this;
 		var item = function(todoItem , index){
-			return <li key={index + todoItem}>
-						{todoItem.text} <button type="button" onClick={this._handleButtonSubmit.bind(null,todoItem)}> showPanel </button>
-						{todoItem.showPanel ? <p><input type="text" value="" onChange={this._handleChangeColor.bind(this, todoItem)} /></p> : null }
+			var style = {
+				color : todoItem.color
+			};			
+			return <li style={style} key={index + todoItem}>
+						{todoItem.text}<button type="button" onClick={self._handleButtonSubmit.bind(this,todoItem)}> showPanel </button>
+						{todoItem.showPanel ? <p><input type="text" id={todoItem.uid} onChange={self._handleChangeColor} /></p> : null }
 					</li>; 
-		}.bind(this);
+		};
 
 		return (
 			<div>
@@ -38,35 +48,44 @@ var ReactTodo = React.createClass({
 	},
 
 	_handleSubmit: function(e){
-
-		this.state.items.push({
+		var allItems = this.state.items;
+		if(allItems == undefined && allItems.length < 1){
+			allItems = [];
+		}
+		allItems.push({
 			'text' : this.state.text,
 			'uid'  : new Date().getTime(),
 			'showPanel': false,
-			'color' : ''
 		});
-
 		this.setState({text: ''});
 
 		e.preventDefault();
 	},
 
-	_handleButtonSubmit: function(todoItem){
-		
+	_handleButtonSubmit: function(todoItem){		
 		this.state.items.forEach(function(item){
 			if(item.uid === todoItem.uid){
 				item.showPanel = !item.showPanel;				
 			}	
-		});
-
-		this.setState({items: this.state.items});
+		});		
+		this._handleSavingData(this.state.items);
 	},
 
-	_handleChangeColor: function(e,todoItem){
-		console.log(todoItem);
-		console.log(e.target.value);
-	}
+	_handleChangeColor: function(e){
+		var uid   = e.target.id,
+			value = e.target.value;			
+		this.state.items.forEach(function(item){
+			if(item.uid == uid){
+				item.color = value;			
+			}	
+		});
+		this._handleSavingData(this.state.items);
+	},
 
+	_handleSavingData: function(items){
+		localStorage.setItem('todoLists' , JSON.stringify(items));
+		this.setState({items: items});
+	}
 
 });
 
