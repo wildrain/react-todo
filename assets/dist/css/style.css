@@ -1,9 +1,23 @@
+html {
+  margin: 0;
+  padding: 0;
+}
+h1 {
+  font-weight: 500;
+}
+#app {
+  text-align: center;
+  margin: 50px 350px 0 350px;
+}
 ul {
   list-style-type: none;
-  width: 30%;
 }
 ul li {
   padding: 5px;
-  border: 1px solid gray;
-  margin: 3px;
+  border: 1px solid #eee;
+  margin: 5px;
+  border-radius: 3px;
+}
+button {
+  margin-left: 10px;
 }

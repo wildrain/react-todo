@@ -30,26 +30,33 @@ var ReactTodo = React.createClass({
 				color : todoItem.color
 			};			
 			return <li className="sort" style={style} data-uid = {todoItem.uid} key={todoItem.uid}>
-						{todoItem.text}<button type="button" onClick={self._handleButtonSubmit.bind(this,todoItem)}> showPanel </button>
+						{todoItem.text}
+						<button type="button" onClick={self._handleButtonSubmit.bind(this,todoItem)}> changeColor </button>
+						<button type="button" onClick={self._handleEditButton.bind(this,todoItem)}> editTodo </button>
 						<button type="button" onClick={self._handleDeleteItem.bind(this,todoItem)}> deleteTodo </button>
-						{todoItem.showPanel ? <p><input type="text" id={todoItem.uid} onChange={self._handleChangeColor} /></p> : null }
+						{todoItem.showPanel ? <p><input type="text" value={todoItem.color} id={todoItem.uid} onChange={self._handleChangeColor} /></p> : null }
+						{todoItem.editPanel ? <p><input type="text" value={todoItem.text} id={todoItem.uid} onChange={self._handleEditTodo} /></p> : null }
 					</li>; 
 		};
 
 		return (
 			<div>
-				<h3 className="heading">ReactTodo App</h3>
-				{(this.state.items.length ? 
-					<ul id="sortable">
-						{this.state.items.map(item)}
-					</ul> 
-					: 
-					<p> no item found </p>
-				)} 
-				<form onSubmit = {this._handleSubmit}>
-					<input onChange = {this._handleOnChange} value= {this.state.text} />
-					<button>add {this.state.items.length + 1}</button>
-				</form>
+				<div className = "todo-rapper">
+					<h1 className="heading">React Todo App</h1>					
+					<form onSubmit = {this._handleSubmit}>
+						<input onChange = {this._handleOnChange} value= {this.state.text} />
+						<button>add {this.state.items.length + 1}</button>
+					</form>
+
+					{(this.state.items.length ? 
+						<ul id="sortable">
+							{this.state.items.map(item)}
+						</ul> 
+						: 
+						<p> no item found </p>
+					)} 
+				</div>
+
 			</div>
 		);
 	},
@@ -68,6 +75,7 @@ var ReactTodo = React.createClass({
 			'text' : this.state.text,
 			'uid'  : new Date().getTime(),
 			'showPanel': false,
+			'editPanel': false,
 		});
 		this.setState({text: ''});
 		this._handleSavingData(allItems);
@@ -78,7 +86,8 @@ var ReactTodo = React.createClass({
 	_handleButtonSubmit: function(todoItem){		
 		this.state.items.forEach(function(item){
 			if(item.uid === todoItem.uid){
-				item.showPanel = !item.showPanel;				
+				item.showPanel = !item.showPanel;	
+				item.editPanel = false;			
 			}	
 		});		
 		this._handleSavingData(this.state.items);
@@ -90,6 +99,27 @@ var ReactTodo = React.createClass({
 		this.state.items.forEach(function(item){
 			if(item.uid == uid){
 				item.color = value;			
+			}	
+		});
+		this._handleSavingData(this.state.items);
+	},
+
+	_handleEditButton: function(todoItem){		
+		this.state.items.forEach(function(item){
+			if(item.uid === todoItem.uid){
+				item.showPanel = false;
+				item.editPanel = !item.editPanel;
+			}	
+		});		
+		this._handleSavingData(this.state.items);
+	},
+
+	_handleEditTodo: function(e){
+		var uid   = e.target.id,
+			value = e.target.value;			
+		this.state.items.forEach(function(item){
+			if(item.uid == uid){
+				item.text = value;			
 			}	
 		});
 		this._handleSavingData(this.state.items);
