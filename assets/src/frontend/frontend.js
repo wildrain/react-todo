@@ -20,6 +20,7 @@ var ReactTodo = React.createClass({
 			};			
 			return <li style={style} key={index + todoItem}>
 						{todoItem.text}<button type="button" onClick={self._handleButtonSubmit.bind(this,todoItem)}> showPanel </button>
+						<button type="button" onClick={self._handleDeleteItem.bind(this,todoItem)}> deleteTodo </button>
 						{todoItem.showPanel ? <p><input type="text" id={todoItem.uid} onChange={self._handleChangeColor} /></p> : null }
 					</li>; 
 		};
@@ -79,6 +80,18 @@ var ReactTodo = React.createClass({
 				item.color = value;			
 			}	
 		});
+		this._handleSavingData(this.state.items);
+	},
+
+	_handleDeleteItem: function(todoItem){		
+		var index = -1;
+		for(var i=0; i<this.state.items.length; i++){
+			if(this.state.items[i].uid == todoItem.uid){
+				index = i; 
+				break;
+			}
+		}
+		this.state.items.splice(index, 1);
 		this._handleSavingData(this.state.items);
 	},
 
