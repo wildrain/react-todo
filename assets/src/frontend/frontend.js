@@ -28,15 +28,43 @@ var ReactTodo = React.createClass({
 		var item = function(todoItem , index){
 			var style = {
 				color : todoItem.color
-			};			
-			return <li className="sort" style={style} data-uid = {todoItem.uid} key={todoItem.uid}>
-						{todoItem.text}
-						<button type="button" onClick={self._handleButtonSubmit.bind(this,todoItem)}> changeColor </button>
-						<button type="button" onClick={self._handleEditButton.bind(this,todoItem)}> editTodo </button>
-						<button type="button" onClick={self._handleDeleteItem.bind(this,todoItem)}> deleteTodo </button>
-						{todoItem.showPanel ? <p><input type="text" value={todoItem.color} id={todoItem.uid} onChange={self._handleChangeColor} /></p> : null }
-						{todoItem.editPanel ? <p><input type="text" value={todoItem.text} id={todoItem.uid} onChange={self._handleEditTodo} /></p> : null }
-					</li>; 
+			};	
+
+			return  (
+					!todoItem.isDeleted ? 
+						<li className="sort" style={style} data-uid = {todoItem.uid} key={todoItem.uid}>
+							{todoItem.text}
+							<button type="button" onClick={self._handleButtonSubmit.bind(this,todoItem)}> changeColor </button>
+							<button type="button" onClick={self._handleEditButton.bind(this,todoItem)}> editTodo </button>
+							<button type="button" onClick={self._handleMoveToTrash.bind(this,todoItem)}> Move to trash </button>
+							{todoItem.showPanel ? <p><input type="text" value={todoItem.color} id={todoItem.uid} onChange={self._handleChangeColor} /></p> : null }
+							{todoItem.editPanel ? <p><input type="text" value={todoItem.text} id={todoItem.uid} onChange={self._handleEditTodo} /></p> : null }
+						</li>
+					: 
+					null
+					);				 
+		};
+
+
+		var deleteItem = function(todoItem , index){
+			var style = {
+				color : todoItem.color
+			};	
+
+			return  (
+					todoItem.isDeleted ? 
+						<li className="sort" style={style} data-uid = {todoItem.uid} key={todoItem.uid}>
+							{todoItem.text}
+							<button type="button" onClick={self._handleButtonSubmit.bind(this,todoItem)}> changeColor </button>
+							<button type="button" onClick={self._handleEditButton.bind(this,todoItem)}> editTodo </button>
+							<button type="button" onClick={self._handleRestoreItem.bind(this,todoItem)}> Restore Todo </button>
+							<button type="button" onClick={self._handleDeleteItem.bind(this,todoItem)}> deleteTodo </button>
+							{todoItem.showPanel ? <p><input type="text" value={todoItem.color} id={todoItem.uid} onChange={self._handleChangeColor} /></p> : null }
+							{todoItem.editPanel ? <p><input type="text" value={todoItem.text} id={todoItem.uid} onChange={self._handleEditTodo} /></p> : null }
+						</li>
+					: 
+					null
+					);				 
 		};
 
 		return (
@@ -54,7 +82,17 @@ var ReactTodo = React.createClass({
 						</ul> 
 						: 
 						<p> no item found </p>
-					)} 
+					)}
+
+					<h1 className="heading">Trashed Items</h1>	
+					{(this.state.items.length ? 
+						<ul id="sortable">
+							{this.state.items.map(deleteItem)}
+						</ul> 
+						: 
+						<p> no item found </p>
+					)}
+
 				</div>
 
 			</div>
@@ -76,6 +114,7 @@ var ReactTodo = React.createClass({
 			'uid'  : new Date().getTime(),
 			'showPanel': false,
 			'editPanel': false,
+			'isDeleted' : false,
 		});
 		this.setState({text: ''});
 		this._handleSavingData(allItems);
@@ -125,7 +164,26 @@ var ReactTodo = React.createClass({
 		this._handleSavingData(this.state.items);
 	},
 
-	_handleDeleteItem: function(todoItem){		
+	_handleMoveToTrash: function(todoItem){	
+		this.state.items.forEach(function(item){
+			if(item.uid == todoItem.uid){
+				item.isDeleted = true;			
+			}	
+		});
+		this._handleSavingData(this.state.items);
+	},
+
+	_handleRestoreItem: function(todoItem){	
+		this.state.items.forEach(function(item){
+			if(item.uid == todoItem.uid){
+				item.isDeleted = false;			
+			}	
+		});
+		this._handleSavingData(this.state.items);
+	},
+
+	_handleDeleteItem: function(todoItem){
+		console.log(todoItem);
 		var index = -1;
 		for(var i=0; i<this.state.items.length; i++){
 			if(this.state.items[i].uid == todoItem.uid){
